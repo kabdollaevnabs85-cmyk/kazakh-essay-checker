@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 import re
 from collections import Counter
 
@@ -744,42 +746,123 @@ if st.button(
         )
 
 
-        # ====================================================
-        # ҚАЙТАЛАНАТЫН СӨЗДЕР
-        # ====================================================
+       # ============================================================
+# ҚАЙТАЛАНАТЫН СӨЗДЕР + 3D ДИАГРАММА
+# ============================================================
 
-        repeated_words = find_repeated_words(
-            essay
+repeated_words = find_repeated_words(essay)
+
+if repeated_words:
+
+    st.subheader("🔁 Қайталанатын сөздер")
+
+    repeated_df = pd.DataFrame(
+        repeated_words,
+        columns=["Сөз", "Қайталану саны"]
+    )
+
+    # Кесте
+    st.table(repeated_df)
+
+    # --------------------------------------------------------
+    # 3D ДИАГРАММА
+    # --------------------------------------------------------
+
+    st.subheader("📊 Қайталанатын сөздер диаграммасы")
+
+    words = repeated_df["Сөз"].tolist()
+    counts = repeated_df["Қайталану саны"].tolist()
+
+    fig = plt.figure(figsize=(10, 6))
+
+    ax = fig.add_subplot(
+        111,
+        projection="3d"
+    )
+
+    # Бағандардың орналасуы
+    x = np.arange(len(words))
+    y = np.zeros(len(words))
+    z = np.zeros(len(words))
+
+    # Бағандардың ені мен биіктігі
+    dx = np.ones(len(words)) * 0.6
+    dy = np.ones(len(words)) * 0.6
+    dz = np.array(counts)
+
+    # 3D бағандар
+    ax.bar3d(
+        x,
+        y,
+        z,
+        dx,
+        dy,
+        dz,
+        shade=True
+    )
+
+    # X осіндегі сөздер
+    ax.set_xticks(x + dx / 2)
+
+    ax.set_xticklabels(
+        words,
+        fontsize=11,
+        rotation=15,
+        ha="right"
+    )
+
+    # Y осін жасырамыз
+    ax.set_yticks([])
+
+    # Тік ось
+    ax.set_zlabel(
+        "Қайталану саны",
+        fontsize=11
+    )
+
+    # Диаграмма атауы
+    ax.set_title(
+        "Эсседе жиі қайталанған сөздер",
+        fontsize=15,
+        fontweight="bold",
+        pad=20
+    )
+
+    # Әр бағанның үстіне санын жазу
+    for i, count in enumerate(counts):
+
+        ax.text(
+            x[i] + dx[i] / 2,
+            y[i] + dy[i] / 2,
+            count + 0.1,
+            str(count),
+            ha="center",
+            va="bottom",
+            fontsize=12,
+            fontweight="bold"
         )
 
-        if repeated_words:
+    # 3D көрініс бұрышы
+    ax.view_init(
+        elev=25,
+        azim=-55
+    )
 
-            st.subheader(
-                "🔁 Қайталанатын сөздер"
-            )
+    plt.tight_layout()
 
-            repeated_df = pd.DataFrame(
-                repeated_words,
-                columns=[
-                    "Сөз",
-                    "Қайталану саны"
-                ]
-            )
+    # STREAMLIT-ТЕ ДИАГРАММАНЫ ШЫҒАРУ
+    st.pyplot(fig)
 
-            st.table(
-                repeated_df
-            )
+    plt.close(fig)
 
-        else:
+else:
 
-            st.info(
-                "Жиі қайталанатын сөздер анықталмады."
-            )
+    st.info(
+        "Жиі қайталанатын сөздер анықталмады."
+    )
 
-
-        # ====================================================
         # ҚОРЫТЫНДЫ
-        # ====================================================
+     
 
         st.subheader(
             "🎓 Қорытынды"
@@ -813,10 +896,8 @@ if st.button(
                 "қайта қарап, толықтыру қажет."
             )
 
-
-        # ====================================================
         # ЕСКЕРТУ
-        # ====================================================
+     
 
         st.caption(
             "Ескерту: жүйе мәтінді автоматты алгоритм "

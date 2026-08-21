@@ -18,30 +18,69 @@ st.set_page_config(
 
 
 # ============================================================
-# СТИЛЬ
+# САЙТТЫҢ ФОНЫ ЖӘНЕ ДИЗАЙНЫ
 # ============================================================
 
 st.markdown("""
 <style>
 
+.stApp {
+    background:
+        radial-gradient(
+            circle at 10% 20%,
+            rgba(191, 219, 254, 0.60) 0%,
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 90% 15%,
+            rgba(221, 214, 254, 0.60) 0%,
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #f8fbff 0%,
+            #eef6ff 50%,
+            #f7f3ff 100%
+        );
+}
+
+.block-container {
+    background: rgba(255, 255, 255, 0.88);
+    padding: 2.5rem 3rem;
+    border-radius: 24px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
 .main-title {
     text-align: center;
-    font-size: 34px;
-    font-weight: bold;
+    font-size: 36px;
+    font-weight: 800;
+    color: #1e3a5f;
     margin-bottom: 5px;
 }
 
 .subtitle {
     text-align: center;
-    color: gray;
+    font-size: 17px;
+    color: #64748b;
     margin-bottom: 30px;
 }
 
 .big-score {
-    font-size: 32px;
+    text-align: center;
+    font-size: 34px;
     font-weight: bold;
-    margin-top: 10px;
-    margin-bottom: 15px;
+    color: #1e3a5f;
+    padding: 10px;
+}
+
+.stButton > button {
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: bold;
+    min-height: 48px;
 }
 
 </style>
@@ -49,7 +88,7 @@ st.markdown("""
 
 
 # ============================================================
-# МӘТІНДІ ТАЛДАУ ФУНКЦИЯЛАРЫ
+# МӘТІНДЕГІ СӨЗДЕРДІ АНЫҚТАУ
 # ============================================================
 
 def get_words(text):
@@ -59,8 +98,16 @@ def get_words(text):
     )
 
 
+# ============================================================
+# СӨЙЛЕМДЕРДІ АНЫҚТАУ
+# ============================================================
+
 def get_sentences(text):
-    sentences = re.split(r"[.!?]+", text)
+
+    sentences = re.split(
+        r"[.!?]+",
+        text
+    )
 
     return [
         sentence.strip()
@@ -69,8 +116,16 @@ def get_sentences(text):
     ]
 
 
+# ============================================================
+# АБЗАЦТАРДЫ АНЫҚТАУ
+# ============================================================
+
 def get_paragraphs(text):
-    paragraphs = re.split(r"\n+", text)
+
+    paragraphs = re.split(
+        r"\n+",
+        text
+    )
 
     return [
         paragraph.strip()
@@ -79,7 +134,12 @@ def get_paragraphs(text):
     ]
 
 
+# ============================================================
+# СӨЗДІ ҚАЛЫПҚА КЕЛТІРУ
+# ============================================================
+
 def normalize(word):
+
     return word.lower().strip(
         ".,!?;:()[]{}\"'«»"
     )
@@ -100,27 +160,48 @@ def check_topic(title, essay):
     essay_lower = essay.lower()
 
     if not title_words:
-        return 10, "⚠️ Тақырыпты нақтырақ енгізу қажет."
+
+        return (
+            10,
+            "⚠️ Тақырыпты нақтырақ енгізу қажет."
+        )
 
     found = 0
 
     for word in title_words:
+
         if word in essay_lower:
             found += 1
 
     ratio = found / len(title_words)
 
     if ratio >= 0.75:
-        return 20, "✅ Эссенің негізгі ойы тақырыпқа толық сәйкес."
+
+        return (
+            20,
+            "✅ Эссенің негізгі ойы тақырыпқа толық сәйкес."
+        )
 
     elif ratio >= 0.50:
-        return 18, "✅ Эссенің негізгі ойы тақырыпқа сәйкес."
+
+        return (
+            18,
+            "✅ Эссенің негізгі ойы тақырыпқа сәйкес."
+        )
 
     elif ratio >= 0.30:
-        return 14, "⚠️ Тақырып жартылай ашылған."
+
+        return (
+            14,
+            "⚠️ Тақырып жартылай ашылған."
+        )
 
     else:
-        return 9, "⚠️ Эссе тақырыбын толығырақ ашу қажет."
+
+        return (
+            9,
+            "⚠️ Эссе тақырыбын толығырақ ашу қажет."
+        )
 
 
 # ============================================================
@@ -174,27 +255,34 @@ def check_structure(essay):
 
     if has_conclusion:
         score += 5
+
     else:
         score += 3
 
-    score = min(score, 20)
+    score = min(
+        score,
+        20
+    )
 
     if score >= 17:
+
         comment = (
-            "✅ Кіріспе, негізгі бөлім және қорытынды "
-            "бөлімдері жақсы құрылған."
+            "✅ Кіріспе, негізгі бөлім және "
+            "қорытынды бөлімдері жақсы құрылған."
         )
 
     elif score >= 13:
+
         comment = (
-            "⚠️ Эссе құрылымы жақсы, бірақ бөлімдерді "
-            "нақтылауға болады."
+            "⚠️ Эссе құрылымы жақсы, бірақ "
+            "бөлімдерді нақтылауға болады."
         )
 
     else:
+
         comment = (
-            "⚠️ Эссені кіріспе, негізгі бөлім және "
-            "қорытындыға бөліңіз."
+            "⚠️ Эссені кіріспе, негізгі бөлім "
+            "және қорытындыға бөліңіз."
         )
 
     return score, comment
@@ -212,26 +300,53 @@ def check_vocabulary(essay):
     ]
 
     if not words:
-        return 0, "⚠️ Сөздер анықталмады."
+
+        return (
+            0,
+            "⚠️ Сөздер анықталмады."
+        )
 
     unique_words = set(words)
 
-    diversity = len(unique_words) / len(words)
+    diversity = (
+        len(unique_words) /
+        len(words)
+    )
 
     if diversity >= 0.65:
-        return 15, "✅ Сөздік қоры өте бай."
+
+        return (
+            15,
+            "✅ Сөздік қоры өте бай."
+        )
 
     elif diversity >= 0.55:
-        return 13, "✅ Сөздік қоры жақсы."
+
+        return (
+            13,
+            "✅ Сөздік қоры жақсы."
+        )
 
     elif diversity >= 0.45:
-        return 12, "✅ Сөздік қоры жеткілікті."
+
+        return (
+            12,
+            "✅ Сөздік қоры жеткілікті."
+        )
 
     elif diversity >= 0.35:
-        return 9, "⚠️ Кейбір сөздер жиі қайталанады."
+
+        return (
+            9,
+            "⚠️ Кейбір сөздер жиі қайталанады."
+        )
 
     else:
-        return 6, "⚠️ Сөздік қорды байыту қажет."
+
+        return (
+            6,
+            "⚠️ Сөздік қорды байыту қажет."
+        )
 
 
 # ============================================================
@@ -245,7 +360,7 @@ def check_grammar(essay):
 
     sentences = get_sentences(essay)
 
-    # Кіші әріптен басталған сөйлемдер
+    # Кіші әріптен басталған сөйлем
     lowercase_sentences = 0
 
     for sentence in sentences:
@@ -278,7 +393,10 @@ def check_grammar(essay):
         )
 
     # Тыныс белгісінің алдындағы бос орын
-    if re.search(r"\s+[,.!?;:]", essay):
+    if re.search(
+        r"\s+[,.!?;:]",
+        essay
+    ):
 
         score -= 2
 
@@ -286,8 +404,11 @@ def check_grammar(essay):
             "тыныс белгілерінің алдында артық бос орын бар"
         )
 
-    # Бірнеше тыныс белгісін қатар қою
-    if re.search(r"[!?.,]{3,}", essay):
+    # Тыныс белгілерін шамадан тыс қолдану
+    if re.search(
+        r"[!?.,]{3,}",
+        essay
+    ):
 
         score -= 2
 
@@ -300,7 +421,9 @@ def check_grammar(essay):
 
     for sentence in sentences:
 
-        sentence_words = get_words(sentence)
+        sentence_words = get_words(
+            sentence
+        )
 
         if len(sentence_words) > 30:
             long_sentences += 1
@@ -390,17 +513,17 @@ def check_coherence(essay):
 
         return (
             10,
-            "⚠️ Байланыстырушы сөздерді көбірек "
-            "қолдануға болады."
+            "⚠️ Байланыстырушы сөздерді "
+            "көбірек қолдануға болады."
         )
 
     else:
 
         return (
             6,
-            "⚠️ «Біріншіден», «алайда», «сондықтан», "
-            "«қорыта айтқанда» сияқты байланыстырушы "
-            "сөздерді қолданыңыз."
+            "⚠️ «Біріншіден», «алайда», "
+            "«сондықтан», «қорыта айтқанда» "
+            "сияқты байланыстырушы сөздерді қолданыңыз."
         )
 
 
@@ -451,7 +574,7 @@ def check_length(essay):
 
 
 # ============================================================
-# ҚАЙТАЛАНАТЫН СӨЗДЕР
+# ҚАЙТАЛАНАТЫН СӨЗДЕРДІ АНЫҚТАУ
 # ============================================================
 
 def find_repeated_words(essay):
@@ -493,7 +616,8 @@ def find_repeated_words(essay):
 
     repeated = [
         (word, count)
-        for word, count in counter.most_common(5)
+        for word, count
+        in counter.most_common(7)
         if count >= 3
     ]
 
@@ -501,13 +625,13 @@ def find_repeated_words(essay):
 
 
 # ============================================================
-# САЙТТЫҢ ЖОҒАРҒЫ БӨЛІГІ
+# САЙТТЫҢ ТАҚЫРЫБЫ
 # ============================================================
 
 st.markdown(
     """
     <div class="main-title">
-    📝 Қазақ тіліндегі эссені бағалау жүйесі
+        📝 Қазақ тіліндегі эссені бағалау жүйесі
     </div>
     """,
     unsafe_allow_html=True
@@ -516,7 +640,7 @@ st.markdown(
 st.markdown(
     """
     <div class="subtitle">
-    Эссені критерийлер бойынша автоматты бағалау
+        Эссені критерийлер бойынша автоматты бағалау
     </div>
     """,
     unsafe_allow_html=True
@@ -563,7 +687,7 @@ st.write(
 
 
 # ============================================================
-# ЭССЕНІ БАҒАЛАУ БАТЫРМАСЫ
+# БАҒАЛАУ БАТЫРМАСЫ
 # ============================================================
 
 if st.button(
@@ -572,21 +696,18 @@ if st.button(
     use_container_width=True
 ):
 
-    # Тақырып енгізілмесе
     if not title.strip():
 
         st.warning(
             "Эссе тақырыбын енгізіңіз."
         )
 
-    # Эссе енгізілмесе
     elif not essay.strip():
 
         st.warning(
             "Эссе мәтінін енгізіңіз."
         )
 
-    # Эссе өте қысқа болса
     elif word_count < 30:
 
         st.error(
@@ -652,7 +773,7 @@ if st.button(
         st.markdown(
             f"""
             <div class="big-score">
-            Нәтиже: {total} / 100
+                Нәтиже: {total} / 100
             </div>
             """,
             unsafe_allow_html=True
@@ -664,8 +785,7 @@ if st.button(
 
 
         # ====================================================
-        # 1-КЕСТЕ
-        # БАҒАЛАУ КРИТЕРИЙЛЕРІ
+        # 1-КЕСТЕ — БАҒАЛАУ КРИТЕРИЙЛЕРІ
         # ====================================================
 
         st.subheader(
@@ -703,15 +823,13 @@ if st.button(
             }
         )
 
-        # КЕСТЕНІ ШЫҒАРУ
         st.table(
             criteria_df
         )
 
 
         # ====================================================
-        # 2-КЕСТЕ
-        # КЕРІ БАЙЛАНЫС
+        # 2-КЕСТЕ — КЕРІ БАЙЛАНЫС
         # ====================================================
 
         st.subheader(
@@ -740,104 +858,178 @@ if st.button(
             }
         )
 
-        # КЕСТЕНІ ШЫҒАРУ
         st.table(
             feedback_df
         )
 
-# ============================================================
-# ҚАЙТАЛАНАТЫН СӨЗДЕР + 3D ДИАГРАММА
-# ============================================================
 
-repeated_words = find_repeated_words(essay)
+        # ====================================================
+        # ҚАЙТАЛАНАТЫН СӨЗДЕР
+        # ====================================================
 
-if repeated_words:
-    st.subheader("🔁 Қайталанатын сөздер")
-
-    repeated_df = pd.DataFrame(
-        repeated_words,
-        columns=["Сөз", "Қайталану саны"]
-    )
-
-    # Кесте
-    st.table(repeated_df)
-
-    # 3D диаграмма
-    st.subheader("📊 Қайталанатын сөздер диаграммасы")
-
-    words = repeated_df["Сөз"].tolist()
-    counts = repeated_df["Қайталану саны"].tolist()
-
-    fig = plt.figure(figsize=(10, 6))
-    ax = fig.add_subplot(111, projection="3d")
-
-    x = np.arange(len(words))
-    y = np.zeros(len(words))
-    z = np.zeros(len(words))
-
-    dx = np.ones(len(words)) * 0.6
-    dy = np.ones(len(words)) * 0.6
-    dz = np.array(counts)
-
-    ax.bar3d(
-        x,
-        y,
-        z,
-        dx,
-        dy,
-        dz,
-        shade=True
-    )
-
-    ax.set_xticks(x + dx / 2)
-
-    ax.set_xticklabels(
-        words,
-        fontsize=11,
-        rotation=15,
-        ha="right"
-    )
-
-    ax.set_yticks([])
-    ax.set_zlabel("Қайталану саны")
-
-    ax.set_title(
-        "Эсседе жиі қайталанған сөздер",
-        fontsize=15,
-        fontweight="bold",
-        pad=20
-    )
-
-    # Бағандардың үстіне сандарын жазу
-    for i, count in enumerate(counts):
-        ax.text(
-            x[i] + dx[i] / 2,
-            y[i] + dy[i] / 2,
-            count + 0.1,
-            str(count),
-            ha="center",
-            va="bottom",
-            fontsize=12,
-            fontweight="bold"
+        repeated_words = find_repeated_words(
+            essay
         )
 
-    ax.view_init(
-        elev=25,
-        azim=-55
-    )
+        if repeated_words:
 
-    plt.tight_layout()
+            st.subheader(
+                "🔁 Қайталанатын сөздер"
+            )
 
-    # Диаграмманы Streamlit-ке шығару
-    st.pyplot(fig)
+            repeated_df = pd.DataFrame(
+                repeated_words,
+                columns=[
+                    "Сөз",
+                    "Қайталану саны"
+                ]
+            )
 
-    plt.close(fig)
+            st.table(
+                repeated_df
+            )
 
-else:
-    st.info("Жиі қайталанатын сөздер анықталмады.")
 
+            # ================================================
+            # MATPLOTLIB 3D ДИАГРАММА
+            # ================================================
+
+            st.subheader(
+                "📊 Қайталанатын сөздер диаграммасы"
+            )
+
+            words = repeated_df[
+                "Сөз"
+            ].tolist()
+
+            counts = repeated_df[
+                "Қайталану саны"
+            ].tolist()
+
+            fig = plt.figure(
+                figsize=(10, 6)
+            )
+
+            ax = fig.add_subplot(
+                111,
+                projection="3d"
+            )
+
+            x = np.arange(
+                len(words)
+            )
+
+            y = np.zeros(
+                len(words)
+            )
+
+            z = np.zeros(
+                len(words)
+            )
+
+            dx = np.ones(
+                len(words)
+            ) * 0.6
+
+            dy = np.ones(
+                len(words)
+            ) * 0.6
+
+            dz = np.array(
+                counts
+            )
+
+            ax.bar3d(
+                x,
+                y,
+                z,
+                dx,
+                dy,
+                dz,
+                shade=True
+            )
+
+            ax.set_xticks(
+                x + dx / 2
+            )
+
+            ax.set_xticklabels(
+                words,
+                fontsize=10,
+                rotation=15,
+                ha="right"
+            )
+
+            ax.set_yticks([])
+
+            ax.set_zlabel(
+                "Қайталану саны",
+                fontsize=11
+            )
+
+            ax.set_title(
+                "Эсседе жиі қайталанған сөздер",
+                fontsize=15,
+                fontweight="bold",
+                pad=20
+            )
+
+
+            # ================================================
+            # ӘР БАҒАННЫҢ ҮСТІНЕ САНЫН ЖАЗУ
+            # ================================================
+
+            for i, count in enumerate(
+                counts
+            ):
+
+                ax.text(
+                    x[i] + dx[i] / 2,
+                    y[i] + dy[i] / 2,
+                    count + 0.1,
+                    str(count),
+                    ha="center",
+                    va="bottom",
+                    fontsize=12,
+                    fontweight="bold"
+                )
+
+
+            # ================================================
+            # 3D КӨРІНІС БҰРЫШЫ
+            # ================================================
+
+            ax.view_init(
+                elev=25,
+                azim=-55
+            )
+
+            plt.tight_layout()
+
+
+            # ================================================
+            # STREAMLIT БЕТІНЕ ДИАГРАММАНЫ ШЫҒАРУ
+            # ================================================
+
+            st.pyplot(
+                fig
+            )
+
+            plt.close(
+                fig
+            )
+
+        else:
+
+            st.info(
+                "Жиі қайталанатын сөздер анықталмады."
+            )
+
+
+        # ====================================================
         # ҚОРЫТЫНДЫ
-     
+        # ====================================================
+
         st.subheader(
             "🎓 Қорытынды"
         )
@@ -870,8 +1062,10 @@ else:
                 "қайта қарап, толықтыру қажет."
             )
 
+
+        # ====================================================
         # ЕСКЕРТУ
-     
+        # ====================================================
 
         st.caption(
             "Ескерту: жүйе мәтінді автоматты алгоритм "
